@@ -1,4 +1,5 @@
-
+// import { routes } from './src/router.js'
+const { routes } = require('./src/router.js')
 // ref: https://umijs.org/config/
 export default {
   treeShaking: true,
@@ -6,7 +7,9 @@ export default {
     // ref: https://umijs.org/plugin/umi-plugin-react.html
     ['umi-plugin-react', {
       antd: true,
-      dva: true,
+      dva: {
+        immer: true
+      },
       dynamicImport: { webpackChunkName: true },
       title: 'duodu-web',
       dll: true,
@@ -25,4 +28,6 @@ export default {
       },
     }],
   ],
+  routes: [routes],
+  
 }
