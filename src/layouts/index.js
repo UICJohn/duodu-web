@@ -2,10 +2,9 @@ import withRouter from 'umi/withRouter';
 import { connect } from 'dva';
 import { IntlProvider } from 'react-intl';
 
-
 function mapStateToProps(state) {
   return {
-    text: 'HI',
+    text: 'Welcome',
   };
 }
 
