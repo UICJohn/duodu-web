@@ -49,14 +49,24 @@ class RegForm extends PureComponent {
             method: 'POST', 
             headers: {'Content-Type': 'application/json'}, 
             body: JSON.stringify({user: values})
-          }});          
+          }}).then(() => {
+            handleError(values)
+          });;       
         }
       })
     }
 
-    const handleError = () => {
-      console.log('here');
-      console.log(user);
+    const handleError = (values) => {
+      if(user.error){
+        let errors = {}
+        Object.entries(user.error).forEach(function(error){
+          errors[`${error[0]}`] = {
+            value: values[`${error[0]}`],
+            errors: [new Error(`${error[0]} ${error[1]}`)]
+          }
+        });
+        form.setFields(errors);
+      }
     }
 
     const sendVerficationCode = (e) => {
@@ -67,9 +77,7 @@ class RegForm extends PureComponent {
             method: 'POST', 
             headers: {'Content-Type': 'application/json'}, 
             body: JSON.stringify(values)} 
-          }).then(() => {
-            handleError()
-          });
+          })
         }
       })
     }
