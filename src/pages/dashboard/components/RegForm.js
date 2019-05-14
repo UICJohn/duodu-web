@@ -9,40 +9,15 @@ import request from '../../../utils/request'
 
 const FormItem = Form.Item
 
-@connect(({ loading }) => ({ loading }))
+@connect(({user, loading }) => ({user, loading }))
 @Form.create()
 class RegForm extends PureComponent {
 
-  handleSubmit = () => {
-    const {dispatch, form} = this.props
-    form.validateFieldsAndScroll((err, values) => {
-      if (err){
-        return
-      }
-      dispatch({ type: 'user/create', payload: values})
-    })
-  }
-
-  sendVerficationCode = (e) => {
-    e.preventDefault();
-    this.props.form.validateFieldsAndScroll(['phone'], (err, values) => {
-      if (!err) {
-        request('/users/send_verify_code', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(values)
-        }).then(data => {
-          if(data['error']){
-            message.error(data['error'])
-          } else {
-            message.success(data['message'])
-          }
-        });
-      }
-    })
-  }
-
   render() {
+
+    const {dispatch, user, form} = this.props
+    const { getFieldDecorator } = form
+
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -65,11 +40,42 @@ class RegForm extends PureComponent {
         },
       },
     };
-    const { loading, form } = this.props
-    const { getFieldDecorator } = form
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      form.validateFieldsAndScroll((err, values) => {
+        if (!err){
+          dispatch({ type: 'user/create', payload: {
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({user: values})
+          }});          
+        }
+      })
+    }
+
+    const handleError = () => {
+      console.log('here');
+      console.log(user);
+    }
+
+    const sendVerficationCode = (e) => {
+      e.preventDefault();
+      form.validateFieldsAndScroll(['phone'], (err, values) => {
+        if (!err) {
+          dispatch({ type: 'user/fetchVerifyCode', payload: { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(values)} 
+          }).then(() => {
+            handleError()
+          });
+        }
+      })
+    }
 
     return (
-      <Form {...formItemLayout} onSubmit={this.handleSubmit} className="login-form">
+      <Form {...formItemLayout} onSubmit={handleSubmit} className="reg-form">
         <Form.Item label="手机号码">
           <Row gutter={8}>
             <Col span={12}>
@@ -137,6 +143,7 @@ class RegForm extends PureComponent {
 RegForm.propTypes = {
   form: PropTypes.object,
   dispatch: PropTypes.func,
+  user: PropTypes.object,
   loading: PropTypes.object,
 }
 
