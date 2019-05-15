@@ -12,7 +12,8 @@
     "dva": "^2.5.0-beta.2",
     "dva-logger": "^1.0.0",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react-dom": "^16.7.0",
+    "utils": "^0.3.1"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",

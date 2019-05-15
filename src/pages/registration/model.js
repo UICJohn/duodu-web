@@ -1,6 +1,6 @@
-import request from '../utils/request'
+import request from '../../utils/request'
 import { message } from 'antd'
-import api from '../service/api'
+import api from '../../service/api'
 
 const {signIn, signUp, fetchVerifyCode } = api
 
@@ -10,11 +10,8 @@ export default {
 
   state: {
     authencated: false,
-    token: null,
-    username: null,
-    email: null,
-    phone: null,
-    error: null
+    error: null,
+    payload: null
   },
 
   // subscriptions: {

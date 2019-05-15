@@ -13,7 +13,6 @@ export default withRouter(
     return (
       <IntlProvider locale="en">
         <div>
-          <h1>MAIN LAYOUT {props.text}</h1>
           {props.children}
         </div>
       </IntlProvider>

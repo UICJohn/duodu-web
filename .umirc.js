@@ -28,6 +28,5 @@ export default {
       },
     }],
   ],
-  routes: [routes],
-  
+  routes: routes, 
 }
