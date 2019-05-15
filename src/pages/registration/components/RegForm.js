@@ -5,54 +5,11 @@ import {
   Form, Input, Row, Col, Checkbox, message, Button
 } from 'antd'
 import request from '../../../utils/request'
+import router from 'umi/router';
 
 @connect(({user, loading }) => ({user, loading }))
 @Form.create()
 class RegForm extends PureComponent {
-
-  handleSubmit = (e) => {
-    const {dispatch, form} = this.props
-    e.preventDefault();
-    form.validateFieldsAndScroll((err, values) => {
-      if (!err){
-        dispatch({ type: 'user/create', payload: {
-          method: 'POST', 
-          headers: {'Content-Type': 'application/json'}, 
-          body: JSON.stringify({user: values})
-        }}).then(() => {
-          this.handleError(values);
-        });;       
-      }
-    })
-  }
-
-  handleError = (values) => {
-    const {user, form} = this.props
-    if(user.error){
-      let errors = {}
-      Object.entries(user.error).forEach(function(error){
-        errors[`${error[0]}`] = {
-          value: values[`${error[0]}`],
-          errors: [new Error(`${error[0]} ${error[1]}`)]
-        }
-      });
-      form.setFields(errors);
-    }
-  }
-
-  sendVerficationCode = (e) => {
-    e.preventDefault();
-    const {dispatch, form} = this.props
-    form.validateFieldsAndScroll(['phone'], (err, values) => {
-      if (!err) {
-        dispatch({ type: 'user/fetchVerifyCode', payload: { 
-          method: 'POST', 
-          headers: {'Content-Type': 'application/json'}, 
-          body: JSON.stringify(values)} 
-        })
-      }
-    })
-  }
 
   render() {
 
@@ -82,8 +39,55 @@ class RegForm extends PureComponent {
       },
     };
 
+
+    const handleSubmit = (e) => {
+      const {dispatch, form} = this.props
+      e.preventDefault();
+      form.validateFieldsAndScroll((err, values) => {
+        if (!err){
+          dispatch({ type: 'user/create', payload: {
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({user: values})
+          }}).then(() => {
+            handleServerError(values);
+          });;       
+        }
+      })
+    }
+
+    const handleServerError = (values) => {
+      const {user, form} = this.props
+      if(user.error){
+        let errors = {}
+        Object.entries(user.error).forEach(function(error){
+          errors[`${error[0]}`] = {
+            value: values[`${error[0]}`],
+            errors: [new Error(`${error[0]} ${error[1]}`)]
+          }
+        });
+        form.setFields(errors);
+      } else {
+        router.push( '/', user.payload)
+      }
+    }
+
+    const sendVerficationCode = (e) => {
+      e.preventDefault();
+      const {dispatch, form} = this.props
+      form.validateFieldsAndScroll(['phone'], (err, values) => {
+        if (!err) {
+          dispatch({ type: 'user/fetchVerifyCode', payload: { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(values)} 
+          })
+        }
+      })
+    }
+
     return (
-      <Form {...formItemLayout} onSubmit={this.handleSubmit} className="reg-form">
+      <Form {...formItemLayout} onSubmit={handleSubmit} className="reg-form">
         <Form.Item label="手机号码">
           <Row gutter={8}>
             <Col span={12}>
@@ -113,7 +117,7 @@ class RegForm extends PureComponent {
               )}
             </Col>
             <Col span={3}>
-              <Button onClick={this.sendVerficationCode}>获取验证码</Button>
+              <Button onClick={sendVerficationCode}>获取验证码</Button>
             </Col>
           </Row>
         </Form.Item>
@@ -132,13 +136,6 @@ class RegForm extends PureComponent {
           </Row>
         </Form.Item>
 
-        <Form.Item {...tailFormItemLayout}>
-          {getFieldDecorator('agreement', {
-            valuePropName: 'checked',
-          })(
-            <Checkbox>I have read the <a href="">agreement</a></Checkbox>
-          )}
-        </Form.Item>
         <Form.Item {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit">注册</Button>
         </Form.Item>

@@ -9,7 +9,6 @@ export default {
   namespace: 'user',
 
   state: {
-    authencated: false,
     error: null,
     payload: null
   },
@@ -33,15 +32,12 @@ export default {
       const data = yield call(request, signUp, payload);
       if(data.error){
         yield put({type: 'updateState', payload: {
-          authencated: false,
           error: data.error
         }})
       }else{
         yield put({type: 'updateState', payload: {
-          authencated: true,
-          username: data.username,
-          email: data.email,
-          phone: data.phone
+          error: null,
+          payload: data
         }})
       }
     },
